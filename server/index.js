@@ -73,14 +73,14 @@ app.post('/', (req, res) => {
   let userName = req.get('userName');
   let password = req.get('password');
 
-  res.send(JSON.stringify(createUserAccount(userName, password)));
+  res.json(createUserAccount(userName, password));
 })
 
 app.get('/', (req, res) => {
   let userName = req.get('userName');
   let password = req.get('password');
   
-  res.send(JSON.stringify(authenticateUser(userName, password, res)))
+  res.json(authenticateUser(userName, password, res))
 })
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
