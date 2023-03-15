@@ -14,6 +14,7 @@ function App() {
 
     fetch('http://localhost:3001', {
       method: "GET",
+      credentials: 'include',
       headers: myHeaders
     })
       .then(response => {
@@ -25,7 +26,7 @@ function App() {
           alert(data.message);
         } else {
           setAuth(true);
-          console.log(data)
+          console.log(data);
         }
       })
       .catch(errorMessage => { alert(errorMessage) });
@@ -52,6 +53,18 @@ function App() {
       })
       .catch(error => { console.log(error) })
   }
+
+  const logoutUser = () => {
+    fetch('http://localhost:3001/logout', {
+      method: "GET",
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      setAuth(false);
+    })
+  }
   return (
     <div className="App">
       <header className="App-header">
@@ -64,7 +77,7 @@ function App() {
         <input type='text' onChange={(event) => { user.current.password = event.target.value }} />
         <button type='button' onClick={() => { loginUser() }}>Login</button>
         {auth ? <><h1>USER AUTHENTICATED</h1>
-          <button type='button' onClick={() => { setAuth(false) }}>Logout</button></>
+          <button type='button' onClick={() => { logoutUser() }}>Logout</button></>
           : <h1>USER NOT AUTHENTICATED</h1>}
       </header>
     </div>

@@ -2,12 +2,18 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const port = 3001;
 
+const corsOptions = {
+  origin: true, //included origin as true
+  credentials: true, //included credentials as true
+};
 app.use(express.json());
-app.use(cors())
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 
 
@@ -60,9 +66,11 @@ const authenticateUser = (userName, password, res) => {
   if(userAccount === -1){
     resultObj.message = `No account found for '${userName}'. Please register first. `
   } else if (!bcrypt.compareSync(password, userAccount.password)){
+    res.cookie('auth', 'false');
     resultObj.message = `Incorrect password. Please try again.`
   } else {
     resultObj.auth = true;
+    res.cookie('auth', 'true')
     resultObj.message = `User authenticated.`;
   }
   return resultObj;
@@ -79,8 +87,16 @@ app.post('/', (req, res) => {
 app.get('/', (req, res) => {
   let userName = req.get('userName');
   let password = req.get('password');
-  
-  res.json(authenticateUser(userName, password, res))
+  console.log(req.cookies);
+  if(req.cookies.auth === 'true'){
+    res.send({ auth: true, message: "You are already logged in." })
+  }else {
+    res.send(JSON.stringify(authenticateUser(userName, password, res)));
+  }
 })
 
+app.get('/logout', (req, res) => {
+  res.clearCookie('auth');
+  res.json("Cleared Cookies");
+})
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
